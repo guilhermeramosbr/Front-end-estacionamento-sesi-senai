@@ -21,7 +21,7 @@ function Header(){
                     <Link to="/login" >Login</Link>
                 </Li>
                  <Li isActive={pathname.includes('/acessos')}> 
-                    <Link to="/acessos" >Login</Link>
+                    <Link to="/acessos" >Acessos</Link>
                 </Li>
 
             </Menu>
