@@ -1,9 +1,11 @@
 function Cadastro(){
 
     
-    return {
+    return (
+        <></>
+    )
 
-    }
+    
 }
 
 export default Cadastro
