@@ -1,9 +1,10 @@
 function Acesso(){
 
 
-    return {
-
-    }
+    return (
+        <>
+        </>
+    )
 }
 
 export default Acesso
