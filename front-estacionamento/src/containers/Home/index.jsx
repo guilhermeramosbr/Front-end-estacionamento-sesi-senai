@@ -1,3 +1,4 @@
+import Header from '../../components/Header';
 import { Container, DivVagas } from './style';
 
 function Home() {

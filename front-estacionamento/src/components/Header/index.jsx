@@ -11,17 +11,14 @@ function Header(){
         <Container>
             <img src={Logo} alt='Logo_SENAI' />
             <Menu>
-                <Li isActive={pathname === '/'}>
-                    <Link to="/">Home</Link>
-                </Li>
-                <Li isActive={pathname.includes('/cadastro')}>
-                    <Link to="/cadastro" >Cadastro</Link>
-                </Li>
-                <Li isActive={pathname.includes('/login')}> 
-                    <Link to="/login" >Login</Link>
+                <Li isActive={pathname.includes('/home')}> 
+                    <Link to="/home" >Home</Link>
                 </Li>
                  <Li isActive={pathname.includes('/acessos')}> 
                     <Link to="/acessos" >Acessos</Link>
+                </Li>
+                <Li isActive={pathname.includes('/cadastro')}>
+                    <Link to="/cadastro" >Cadastrar</Link>
                 </Li>
 
             </Menu>
