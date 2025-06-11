@@ -9,6 +9,7 @@ display: flex;
 padding: 10px 30px;
 justify-content: space-between;
 align-items: center;
+max-height: 80px;
 
  img{
     width: 30%;
@@ -27,7 +28,7 @@ position: relative;
 &::after{
     content: '';
     position: absolute;
-    width: ${props => props.isActive ? '100%' : '0'};
+    width: ${props => props.$isActive ? '100%' : '0'};
     height: 3px;
     background-color: blue;
     bottom: -10px;

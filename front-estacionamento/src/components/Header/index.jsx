@@ -11,13 +11,13 @@ function Header(){
         <Container>
             <img src={Logo} alt='Logo_SENAI' />
             <Menu>
-                <Li isActive={pathname.includes('/home')}> 
+                <Li $isActive={pathname.includes('/home')}> 
                     <Link to="/home" >Home</Link>
                 </Li>
-                 <Li isActive={pathname.includes('/acessos')}> 
+                 <Li $isActive={pathname.includes('/acessos')}> 
                     <Link to="/acessos" >Acessos</Link>
                 </Li>
-                <Li isActive={pathname.includes('/cadastro')}>
+                <Li $isActive={pathname.includes('/cadastro')}>
                     <Link to="/cadastro" >Cadastrar</Link>
                 </Li>
 
