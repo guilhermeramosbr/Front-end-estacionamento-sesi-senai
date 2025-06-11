@@ -20,26 +20,28 @@ function Home() {
   async function buscarDados() {
     try {
       const respostaVagas = await api.get('/presentes');
-      setVagasOcupadas(respostaVagas || 0);
+      // Acesse a propriedade 'data' da resposta. Se a API retorna um objeto como { count: 5 }, use .data.count
+      // Se a API retorna apenas o número (e.g., 5), use .data
+      setVagasOcupadas(respostaVagas.data.count || 0); // Mantido .count como uma aposta comum para APIs de contagem
 
-      const respostaEntradas = await api.get('/registrar');
+      // CORREÇÃO: Usar '/listar' para obter as últimas entradas (GET)
+      const respostaEntradas = await api.get('/listar'); 
       const entradasOrdenadas = respostaEntradas.data
         .sort((a, b) => new Date(b.data_hora) - new Date(a.data_hora))
         .slice(0, 5);
       setUltimasEntradas(entradasOrdenadas);
 
-      // Ajuste conforme sua API para pegar últimas saídas
-      const respostaSaidas = await api.get('/saida');
+      const respostaSaidas = await api.get('/saidas');
       const saidasOrdenadas = respostaSaidas.data
         .sort((a, b) => new Date(b.data_saida) - new Date(a.data_saida))
         .slice(0, 5);
       setUltimasSaidas(saidasOrdenadas);
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
+      setMensagem('Erro ao carregar dados.');
     }
   }
 
-  // Função para atualizar o total de vagas (pode adicionar persistência depois)
   function alterarTotalVagas(e) {
     const valor = Number(e.target.value);
     if (valor >= 0) {
@@ -47,7 +49,6 @@ function Home() {
     }
   }
 
-  // Registrar entrada pela placa
   async function registrarEntrada(e) {
     e.preventDefault();
     if (!placaEntrada) {
@@ -56,8 +57,8 @@ function Home() {
     }
 
     try {
-      // Aqui você deve adaptar conforme sua API, geralmente busca veículo pelo placa e registra acesso
-      const respostaVeiculo = await api.get(`/veiculo?id=${placaEntrada}`);
+      // CORREÇÃO: Usar 'placa' como query parameter em vez de 'id'
+      const respostaVeiculo = await api.get(`/veiculo?placa=${placaEntrada}`);
       if (respostaVeiculo.data.length === 0) {
         setMensagem('Veículo não encontrado.');
         return;
@@ -66,7 +67,6 @@ function Home() {
 
       await api.post('/registrar', {
         veiculoId,
-        // outros campos necessários (ex: usuarioId se necessário)
       });
 
       setMensagem('Entrada registrada com sucesso!');
@@ -78,7 +78,6 @@ function Home() {
     }
   }
 
-  // Registrar saída pela placa
   async function registrarSaida(e) {
     e.preventDefault();
     if (!placaSaida) {
@@ -87,16 +86,15 @@ function Home() {
     }
 
     try {
-      // Buscar o veículo
-      const respostaVeiculo = await api.get(`/veiculos?id=${placaSaida}`);
+      // CORREÇÃO: Usar 'placa' como query parameter em vez de 'id', e '/veiculo' (singular)
+      const respostaVeiculo = await api.get(`/veiculo?placa=${placaSaida}`);
       if (respostaVeiculo.data.length === 0) {
         setMensagem('Veículo não encontrado.');
         return;
       }
       const veiculoId = respostaVeiculo.data[0].id;
 
-      // Buscar acesso aberto (sem saída) para esse veículo
-      const respostaAcessos = await api.get('/saidas');
+      const respostaAcessos = await api.get('/listar'); // Continua buscando todos os acessos para filtrar
       const acessoAberto = respostaAcessos.data.find(
         (acesso) => acesso.veiculoId === veiculoId && !acesso.data_saida
       );
@@ -106,8 +104,7 @@ function Home() {
         return;
       }
 
-      // Registrar saída usando o id do acesso
-      await api.post(`/acesso/${acessoAberto.id}/registrarSaida`);
+      await api.post(`/saida/${acessoAberto.id}`);
 
       setMensagem('Saída registrada com sucesso!');
       setPlacaSaida('');
