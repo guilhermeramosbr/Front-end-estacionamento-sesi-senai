@@ -1,29 +1,29 @@
-
-import Logo from '../../assets/logo.png';
+import Logo from '../../assets/senai.png';
 import { Link, useLocation } from 'react-router-dom';
-
 import { Container, Li, Menu } from './styles';
-function Header(){
 
+function Header() {
     const { pathname } = useLocation();
 
-    return(
+    return (
         <Container>
             <img src={Logo} alt='Logo_SENAI' />
             <Menu>
-                <Li $isActive={pathname.includes('/home')}> 
-                    <Link to="/home" >Home</Link>
+                <Li $isActive={pathname.includes('/home')}>
+                    <Link to="/home">Home</Link>
                 </Li>
-                 <Li $isActive={pathname.includes('/acessos')}> 
-                    <Link to="/acessos" >Acessos</Link>
+                <Li $isActive={pathname.includes('/acessos')}>
+                    <Link to="/acessos">Acessos</Link>
                 </Li>
                 <Li $isActive={pathname.includes('/cadastro')}>
-                    <Link to="/cadastro" >Cadastrar</Link>
+                    <Link to="/cadastro">Cadastrar</Link>
                 </Li>
-
+                <Li $isActive={pathname.includes('/usuarios')}>
+                    <Link to="/usuarios">Usuários</Link>
+                </Li>
             </Menu>
         </Container>
-    )
+    );
 }
 
 export default Header;

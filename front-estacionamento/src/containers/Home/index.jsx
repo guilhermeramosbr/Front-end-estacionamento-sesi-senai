@@ -1,10 +1,21 @@
+// filepath: c:\Users\ramos\Downloads\Sesi-Senai\Front-end-estacionamento\front-estacionamento\src\containers\Home\index.jsx
 import { useEffect, useState } from 'react';
 import api from '../../services/api.js';
 import Header from '../../components/Header';
-import { Container, Secao, Titulo, Lista, ItemLista, CaixaInfo, Formulario, Input, Botao } from './style';
+import {
+  Container,
+  Secao,
+  Titulo,
+  Lista,
+  ItemLista,
+  CaixaInfo,
+  Formulario,
+  Input,
+  Botao
+} from './style';
 
 function Home() {
-  const [totalVagas, setTotalVagas] = useState(20); // Valor inicial que pode ser alterado
+  const [totalVagas, setTotalVagas] = useState(20);
   const [vagasOcupadas, setVagasOcupadas] = useState(0);
   const [ultimasEntradas, setUltimasEntradas] = useState([]);
   const [ultimasSaidas, setUltimasSaidas] = useState([]);
@@ -20,11 +31,8 @@ function Home() {
   async function buscarDados() {
     try {
       const respostaVagas = await api.get('/presentes');
-      // Acesse a propriedade 'data' da resposta. Se a API retorna um objeto como { count: 5 }, use .data.count
-      // Se a API retorna apenas o número (e.g., 5), use .data
-      setVagasOcupadas(respostaVagas.data.count || 0); // Mantido .count como uma aposta comum para APIs de contagem
+      setVagasOcupadas(respostaVagas.data.count || 0);
 
-      // CORREÇÃO: Usar '/listar' para obter as últimas entradas (GET)
       const respostaEntradas = await api.get('/listar'); 
       const entradasOrdenadas = respostaEntradas.data
         .sort((a, b) => new Date(b.data_hora) - new Date(a.data_hora))
@@ -55,9 +63,11 @@ function Home() {
       setMensagem('Informe a placa para registrar a entrada.');
       return;
     }
-
+    if (vagasOcupadas >= totalVagas) {
+      setMensagem('Não há vagas disponíveis.');
+      return;
+    }
     try {
-      // CORREÇÃO: Usar 'placa' como query parameter em vez de 'id'
       const respostaVeiculo = await api.get(`/veiculo?placa=${placaEntrada}`);
       if (respostaVeiculo.data.length === 0) {
         setMensagem('Veículo não encontrado.');
@@ -73,7 +83,7 @@ function Home() {
       setPlacaEntrada('');
       buscarDados();
     } catch (error) {
-      setMensagem('Erro ao registrar entrada.');
+      setMensagem(error.response?.data?.mensagem || 'Erro ao registrar entrada.');
       console.error(error);
     }
   }
@@ -86,7 +96,6 @@ function Home() {
     }
 
     try {
-      // CORREÇÃO: Usar 'placa' como query parameter em vez de 'id', e '/veiculo' (singular)
       const respostaVeiculo = await api.get(`/veiculo?placa=${placaSaida}`);
       if (respostaVeiculo.data.length === 0) {
         setMensagem('Veículo não encontrado.');
@@ -94,7 +103,7 @@ function Home() {
       }
       const veiculoId = respostaVeiculo.data[0].id;
 
-      const respostaAcessos = await api.get('/listar'); // Continua buscando todos os acessos para filtrar
+      const respostaAcessos = await api.get('/listar');
       const acessoAberto = respostaAcessos.data.find(
         (acesso) => acesso.veiculoId === veiculoId && !acesso.data_saida
       );
