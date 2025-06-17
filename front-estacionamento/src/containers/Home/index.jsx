@@ -1,17 +1,18 @@
 // filepath: c:\Users\ramos\Downloads\Sesi-Senai\Front-end-estacionamento\front-estacionamento\src\containers\Home\index.jsx
 import { useEffect, useState } from 'react';
-import api from '../../services/api.js';
+import api from '../../services/api';
 import Header from '../../components/Header';
 import {
   Container,
   Secao,
   Titulo,
-  Lista,
-  ItemLista,
   CaixaInfo,
   Formulario,
   Input,
-  Botao
+  Botao,
+  Lista,
+  ItemLista,
+  Mensagem
 } from './style';
 
 function Home() {
@@ -19,7 +20,6 @@ function Home() {
   const [vagasOcupadas, setVagasOcupadas] = useState(0);
   const [ultimasEntradas, setUltimasEntradas] = useState([]);
   const [ultimasSaidas, setUltimasSaidas] = useState([]);
-
   const [placaEntrada, setPlacaEntrada] = useState('');
   const [placaSaida, setPlacaSaida] = useState('');
   const [mensagem, setMensagem] = useState('');
@@ -33,7 +33,7 @@ function Home() {
       const respostaVagas = await api.get('/presentes');
       setVagasOcupadas(respostaVagas.data.count || 0);
 
-      const respostaEntradas = await api.get('/listar'); 
+      const respostaEntradas = await api.get('/listar');
       const entradasOrdenadas = respostaEntradas.data
         .sort((a, b) => new Date(b.data_hora) - new Date(a.data_hora))
         .slice(0, 5);
@@ -45,20 +45,13 @@ function Home() {
         .slice(0, 5);
       setUltimasSaidas(saidasOrdenadas);
     } catch (error) {
-      console.error('Erro ao carregar dados:', error);
       setMensagem('Erro ao carregar dados.');
-    }
-  }
-
-  function alterarTotalVagas(e) {
-    const valor = Number(e.target.value);
-    if (valor >= 0) {
-      setTotalVagas(valor);
     }
   }
 
   async function registrarEntrada(e) {
     e.preventDefault();
+    setMensagem('');
     if (!placaEntrada) {
       setMensagem('Informe a placa para registrar a entrada.');
       return;
@@ -68,8 +61,8 @@ function Home() {
       return;
     }
     try {
-      const respostaVeiculo = await api.get(`/veiculo?placa=${placaEntrada}`);
-      if (respostaVeiculo.data.length === 0) {
+      const respostaVeiculo = await api.get(`/veiculo/placa?placa=${placaEntrada}`);
+      if (!respostaVeiculo.data.length) {
         setMensagem('Veículo não encontrado.');
         return;
       }
@@ -77,6 +70,7 @@ function Home() {
 
       await api.post('/registrar', {
         veiculoId,
+        data_hora: new Date().toISOString() // Envia a data de entrada
       });
 
       setMensagem('Entrada registrada com sucesso!');
@@ -84,20 +78,19 @@ function Home() {
       buscarDados();
     } catch (error) {
       setMensagem(error.response?.data?.mensagem || 'Erro ao registrar entrada.');
-      console.error(error);
     }
   }
 
   async function registrarSaida(e) {
     e.preventDefault();
+    setMensagem('');
     if (!placaSaida) {
       setMensagem('Informe a placa para registrar a saída.');
       return;
     }
-
     try {
-      const respostaVeiculo = await api.get(`/veiculo?placa=${placaSaida}`);
-      if (respostaVeiculo.data.length === 0) {
+      const respostaVeiculo = await api.get(`/veiculo/placa?placa=${placaSaida}`);
+      if (!respostaVeiculo.data.length) {
         setMensagem('Veículo não encontrado.');
         return;
       }
@@ -113,14 +106,22 @@ function Home() {
         return;
       }
 
-      await api.post(`/saida/${acessoAberto.id}`);
+      await api.post(`/saida/${acessoAberto.id}`, {
+        data_saida: new Date().toISOString() // Envia a data de saída
+      });
 
       setMensagem('Saída registrada com sucesso!');
       setPlacaSaida('');
       buscarDados();
     } catch (error) {
       setMensagem('Erro ao registrar saída.');
-      console.error(error);
+    }
+  }
+
+  function alterarTotalVagas(e) {
+    const valor = Number(e.target.value);
+    if (valor >= 0) {
+      setTotalVagas(valor);
     }
   }
 
@@ -128,19 +129,22 @@ function Home() {
     <>
       <Header />
       <Container>
-        <CaixaInfo>
-          <p>Total de vagas:</p>
-          <Input
-            type="number"
-            min="0"
-            value={totalVagas}
-            onChange={alterarTotalVagas}
-          />
-          <p>Vagas ocupadas: {vagasOcupadas}</p>
-        </CaixaInfo>
+        <Secao>
+          <Titulo>Controle de Vagas</Titulo>
+          <CaixaInfo>
+            <p>Total de vagas:</p>
+            <Input
+              type="number"
+              min="0"
+              value={totalVagas}
+              onChange={alterarTotalVagas}
+            />
+            <p>Vagas ocupadas: {vagasOcupadas}</p>
+          </CaixaInfo>
+        </Secao>
 
         <Secao>
-          <Titulo>Registrar Entrada pela Placa</Titulo>
+          <Titulo>Registrar Entrada</Titulo>
           <Formulario onSubmit={registrarEntrada}>
             <Input
               placeholder="Digite a placa"
@@ -154,7 +158,7 @@ function Home() {
         </Secao>
 
         <Secao>
-          <Titulo>Registrar Saída pela Placa</Titulo>
+          <Titulo>Registrar Saída</Titulo>
           <Formulario onSubmit={registrarSaida}>
             <Input
               placeholder="Digite a placa"
@@ -167,15 +171,15 @@ function Home() {
           </Formulario>
         </Secao>
 
-        {mensagem && <CaixaInfo><p>{mensagem}</p></CaixaInfo>}
+        {mensagem && <Mensagem>{mensagem}</Mensagem>}
 
         <Secao>
           <Titulo>Últimas Entradas</Titulo>
           <Lista>
-            {ultimasEntradas.length === 0 && <p>Nenhuma entrada registrada.</p>}
+            {ultimasEntradas.length === 0 && <ItemLista>Nenhuma entrada registrada.</ItemLista>}
             {ultimasEntradas.map((item) => (
               <ItemLista key={item.id}>
-                Usuário ID: {item.usuarioId} - Veículo ID: {item.veiculoId} - Entrada: {new Date(item.data_hora).toLocaleString()}
+                Veículo ID: {item.veiculoId} - Entrada: {new Date(item.data_hora).toLocaleString()}
               </ItemLista>
             ))}
           </Lista>
@@ -184,10 +188,10 @@ function Home() {
         <Secao>
           <Titulo>Últimas Saídas</Titulo>
           <Lista>
-            {ultimasSaidas.length === 0 && <p>Nenhuma saída registrada.</p>}
+            {ultimasSaidas.length === 0 && <ItemLista>Nenhuma saída registrada.</ItemLista>}
             {ultimasSaidas.map((item) => (
               <ItemLista key={item.id}>
-                Usuário ID: {item.usuarioId} - Veículo ID: {item.veiculoId} - Saída: {new Date(item.data_saida).toLocaleString()}
+                Veículo ID: {item.veiculoId} - Saída: {new Date(item.data_saida).toLocaleString()}
               </ItemLista>
             ))}
           </Lista>

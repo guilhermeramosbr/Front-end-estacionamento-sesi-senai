@@ -12,7 +12,7 @@ import {
 } from './style';
 
 function Cadastro() {
-  const [carro, setCarro] = useState({ modelo: '', placa: '' });
+  const [carro, setCarro] = useState({ modelo: '', placa: '', cor: '' });
   const [motorista, setMotorista] = useState({ nome: '', documento: '', email: '', senha: '' });
   const [mensagem, setMensagem] = useState('');
 
@@ -30,18 +30,26 @@ function Cadastro() {
     e.preventDefault();
     setMensagem('');
     try {
-      const resUsuario = await api.post('/usuario', {
+      
+      await api.post('/usuario', {
         nome: motorista.nome,
         email: motorista.email,
         senha: motorista.senha,
         documento: motorista.documento
       });
-      const usuarioId = resUsuario.data.id;
+      // O backend retorna só mensagem, então busque o usuário pelo email para pegar o id
+      const usuarios = await api.get('/usuarios');
+      const usuarioCriado = usuarios.data.find(u => u.email === motorista.email);
+      if (!usuarioCriado) {
+        setMensagem('Usuário criado, mas não encontrado na listagem.');
+        return;
+      }
+      const usuarioId = usuarioCriado.id;
 
       await api.post('/veiculo', { ...carro, usuarioId });
 
       setMensagem('Carro e motorista registrados com sucesso!');
-      setCarro({ modelo: '', placa: '' });
+      setCarro({ modelo: '', placa: '', cor: '' });
       setMotorista({ nome: '', documento: '', email: '', senha: '' });
     } catch (error) {
       setMensagem('Erro ao registrar: ' + (error.response?.data?.mensagem || 'Erro desconhecido.'));
@@ -101,6 +109,14 @@ function Cadastro() {
             name="placa"
             placeholder="Placa do Carro"
             value={carro.placa}
+            onChange={handleCarroChange}
+            required
+          />
+          <Input
+            type="text"
+            name="cor"
+            placeholder="Cor do Carro"
+            value={carro.cor}
             onChange={handleCarroChange}
             required
           />

@@ -18,7 +18,6 @@ export const Titulo = styled.h2`
   margin-bottom: 1.2rem;
   color: #2c3e50;
   font-weight: 700;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   border-bottom: 3px solid #2980b9;
   padding-bottom: 0.3rem;
   width: fit-content;
@@ -35,26 +34,6 @@ export const CaixaInfo = styled.div`
     font-weight: 600;
     color: #1f3c88;
     font-size: 1.1rem;
-  }
-`;
-
-export const Lista = styled.ul`
-  list-style-type: none;
-  padding-left: 0;
-`;
-
-export const ItemLista = styled.li`
-  background-color: #f9fbfd;
-  padding: 1rem 1.3rem;
-  margin-bottom: 0.9rem;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(41, 128, 185, 0.1);
-  font-size: 1.05rem;
-  color: #34495e;
-  transition: background-color 0.3s ease;
-
-  &:hover {
-    background-color: #dbe9fc;
   }
 `;
 
@@ -93,4 +72,31 @@ export const Botao = styled.button`
   &:hover {
     background-color: #1f3c88;
   }
+`;
+
+export const Lista = styled.ul`
+  list-style-type: none;
+  padding-left: 0;
+`;
+
+export const ItemLista = styled.li`
+  background-color: #f9fbfd;
+  padding: 1rem 1.3rem;
+  margin-bottom: 0.9rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(41, 128, 185, 0.1);
+  font-size: 1.05rem;
+  color: #34495e;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #dbe9fc;
+  }
+`;
+
+export const Mensagem = styled.p`
+  margin-top: 15px;
+  color: #e74c3c;
+  text-align: center;
+  font-weight: 500;
 `;

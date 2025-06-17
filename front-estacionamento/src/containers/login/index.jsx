@@ -12,7 +12,7 @@ function Login() {
     try {
       await api.post('/login', { email, senha });
       setMessage('Login realizado com sucesso!');
-    } catch (error) {
+    } catch {
       setMessage('Falha no login. Verifique suas credenciais.');
     }
   };
