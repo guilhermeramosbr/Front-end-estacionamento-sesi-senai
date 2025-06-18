@@ -44,7 +44,7 @@ function Home() {
         .sort((a, b) => new Date(b.data_saida) - new Date(a.data_saida))
         .slice(0, 5);
       setUltimasSaidas(saidasOrdenadas);
-    } catch (error) {
+    } catch {
       setMensagem('Erro ao carregar dados.');
     }
   }
@@ -113,7 +113,7 @@ function Home() {
       setMensagem('Saída registrada com sucesso!');
       setPlacaSaida('');
       buscarDados();
-    } catch (error) {
+    } catch {
       setMensagem('Erro ao registrar saída.');
     }
   }
@@ -179,7 +179,7 @@ function Home() {
             {ultimasEntradas.length === 0 && <ItemLista>Nenhuma entrada registrada.</ItemLista>}
             {ultimasEntradas.map((item) => (
               <ItemLista key={item.id}>
-                Veículo ID: {item.veiculoId} - Entrada: {new Date(item.data_hora).toLocaleString()}
+                Placa: {item.veiculo?.placa || '---'} - Entrada: {new Date(item.data_hora).toLocaleString()}
               </ItemLista>
             ))}
           </Lista>
@@ -191,7 +191,7 @@ function Home() {
             {ultimasSaidas.length === 0 && <ItemLista>Nenhuma saída registrada.</ItemLista>}
             {ultimasSaidas.map((item) => (
               <ItemLista key={item.id}>
-                Veículo ID: {item.veiculoId} - Saída: {new Date(item.data_saida).toLocaleString()}
+                Placa: {item.veiculo?.placa || '---'} - Saída: {new Date(item.data_saida).toLocaleString()}
               </ItemLista>
             ))}
           </Lista>
